@@ -29,16 +29,22 @@ public class RequestFactory extends TestBase {
    * @return Response of the request
    */
   public static Response updateProduct(String path, Object requestPayload) {
-    return null;
+    logger.info("Updating an existing product.");
+    Response res = RestClient.doPutRequestWithPayload(path, ContentType.JSON, requestPayload);
+    logger.info(String.format("The request for updating an existing product completed"));
+    return res;
   }
 
   /**
-   * Send request to update an existing product
+   * Send request to delete an existing product
    *
    * @param path
    * @return Response of the request
    */
   public static Response deleteProduct(String path) {
-    return null;
+    logger.info("Deleting an existing product.");
+    Response res = RestClient.doDeleteRequestWithParams(path);
+    logger.info(String.format("The request for deleting an existing product completed"));
+    return res;
   }
 }

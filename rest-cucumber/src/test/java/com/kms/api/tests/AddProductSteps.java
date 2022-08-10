@@ -6,6 +6,7 @@ import com.kms.api.model.LaptopBag;
 import com.kms.api.requests.RequestFactory;
 import com.kms.api.util.RequestBuilder;
 import com.kms.api.util.ValidationUtil;
+import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -20,6 +21,10 @@ public class AddProductSteps extends TestBase {
   private Object requestPayload;
   private LaptopBag reqAddLaptop;
   private LaptopBag resAddLaptop;
+
+  private LaptopBag reqUpdateLaptop;
+  private LaptopBag resUpdateLaptop;
+
   private int id;
   private Response res;
 
@@ -54,4 +59,30 @@ public class AddProductSteps extends TestBase {
   public void theProductIsAddedSuccessfullyWithAnIntegerId() {
     ValidationUtil.validateStringEqual(resAddLaptop.getId(), id);
   }
+
+  @When("I perform the PUT request with id and BrandName as {string}, Features as {string}, LaptopName as {string}")
+  public void iPerformThePUTRequestWithIdAndBrandNameAsFeaturesAsLaptopNameAs(String brandName, String features, String laptopName) {
+    String[] array = features.split(",");
+    List<String> lst = Arrays.asList(array);
+    reqUpdateLaptop = RequestBuilder.requestPayload(laptopName, brandName, id, lst);
+    res = RequestFactory.updateProduct(path, reqUpdateLaptop );
+    resUpdateLaptop = mapRestResponseToPojo(res, LaptopBag.class);
+  }
+  @And("Details should get updated")
+  public void detailsShouldGetUpdated() {
+    ValidationUtil.validateStringEqual(reqUpdateLaptop.getLaptopName(), resUpdateLaptop.getLaptopName());
+    ValidationUtil.validateStringEqual(reqUpdateLaptop.getBrandName(), resUpdateLaptop.getBrandName());
+    ValidationUtil.validateStringEqual(reqUpdateLaptop.getFeatures(), resUpdateLaptop.getFeatures());
+  }
+
+@After
+  public void teardown(){
+    try{
+      res = RequestFactory.deleteProduct("delete/" + id );
+    }catch(Exception exception){
+      System.out.println(exception);
+    }
+
 }
+}
+
